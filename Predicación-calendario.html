@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registro de Predicación</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #f5f0e8;
+    --gold: #c9973a;
+    --gold-light: #e8c87a;
+    --brown-dark: #2c1f0e;
+    --brown-mid: #5a3e28;
+    --brown-light: #8c6e4f;
+    --white: #fefcf8;
+    --shadow: rgba(44,31,14,0.15);
+    --green: #4a7c59;
+    --green-light: #7dba94;
+    --red: #9b3a2e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--brown-dark);
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(201,151,58,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 90%, rgba(201,151,58,0.06) 0%, transparent 50%);
+  }
+
+  header {
+    background: var(--brown-dark);
+    padding: 28px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 24px var(--shadow);
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    color: var(--gold-light);
+    font-size: 1.7rem;
+    letter-spacing: 0.5px;
+  }
+
+  header .subtitle {
+    font-size: 0.8rem;
+    color: var(--brown-light);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 3px;
+  }
+
+  .nav-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .nav-btn {
+    background: none;
+    border: 1.5px solid var(--gold);
+    color: var(--gold);
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .nav-btn:hover { background: var(--gold); color: var(--brown-dark); }
+
+  .month-label {
+    font-family: 'Playfair Display', serif;
+    color: var(--gold-light);
+    font-size: 1.1rem;
+    min-width: 160px;
+    text-align: center;
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 36px auto;
+    padding: 0 20px;
+  }
+
+  .monthly-total {
+    background: var(--brown-dark);
+    border-radius: 16px;
+    padding: 22px 32px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 8px 32px var(--shadow);
+    border: 1px solid rgba(201,151,58,0.2);
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .stat-block .label {
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--brown-light);
+  }
+
+  .stat-block .value {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.4rem;
+    color: var(--gold-light);
+    line-height: 1.1;
+  }
+
+  .stat-block .value.gold { color: var(--gold); font-size: 2rem; }
+
+  .progress-bar-wrap {
+    width: 100%;
+    height: 6px;
+    background: rgba(201,151,58,0.15);
+    border-radius: 99px;
+    overflow: hidden;
+    margin-top: 6px;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    border-radius: 99px;
+    transition: width 0.5s ease;
+    max-width: 100%;
+  }
+
+  .goal-section {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 20px var(--shadow);
+    border: 1px solid rgba(201,151,58,0.12);
+  }
+
+  .goal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .goal-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    color: var(--brown-dark);
+  }
+
+  .goal-header .goal-tag {
+    font-size: 0.68rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--brown-light);
+  }
+
+  .goal-input-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .goal-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .goal-input-group label {
+    font-size: 0.68rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--brown-mid);
+    font-weight: 500;
+  }
+
+  .goal-input-group input[type="number"] {
+    width: 90px;
+    padding: 9px 12px;
+    border: 1.5px solid rgba(201,151,58,0.3);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    color: var(--brown-dark);
+    background: var(--cream);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .goal-input-group input:focus { border-color: var(--gold); }
+
+  .btn-set-goal {
+    padding: 9px 20px;
+    background: var(--gold);
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--brown-dark);
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+  .btn-set-goal:hover { background: var(--gold-light); }
+
+  .suggestions-wrap { margin-top: 20px; }
+
+  .suggestions-title {
+    font-size: 0.68rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--brown-light);
+    margin-bottom: 12px;
+  }
+
+  .suggestions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 10px;
+  }
+
+  .suggestion-card {
+    border-radius: 12px;
+    padding: 14px 16px;
+    border: 1.5px solid rgba(201,151,58,0.2);
+    background: var(--cream);
+    transition: border-color 0.2s, transform 0.15s;
+  }
+
+  .suggestion-card:hover { border-color: var(--gold); transform: translateY(-1px); }
+
+  .suggestion-card .sc-label {
+    font-size: 0.65rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--brown-light);
+    margin-bottom: 4px;
+  }
+
+  .suggestion-card .sc-days {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: var(--brown-dark);
+    line-height: 1;
+  }
+
+  .suggestion-card .sc-per-day {
+    font-size: 0.82rem;
+    color: var(--brown-mid);
+    margin-top: 3px;
+  }
+
+  .suggestion-card .sc-per-day strong {
+    color: var(--gold);
+    font-size: 1rem;
+  }
+
+  .suggestion-card.impossible {
+    opacity: 0.45;
+    pointer-events: none;
+  }
+
+  .suggestion-card .sc-note {
+    font-size: 0.62rem;
+    color: var(--brown-light);
+    margin-top: 5px;
+    font-style: italic;
+  }
+
+  .goal-achieved {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    background: rgba(74,124,89,0.12);
+    border: 1.5px solid var(--green-light);
+    border-radius: 10px;
+    padding: 12px 18px;
+    margin-top: 16px;
+    font-size: 0.9rem;
+    color: var(--green);
+    font-weight: 500;
+  }
+
+  .goal-achieved.show { display: flex; }
+
+  .goal-ahead {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    background: rgba(201,151,58,0.08);
+    border: 1.5px solid var(--gold);
+    border-radius: 10px;
+    padding: 12px 18px;
+    margin-top: 16px;
+    font-size: 0.9rem;
+    color: var(--brown-mid);
+    font-weight: 500;
+  }
+  .goal-ahead.show { display: flex; }
+
+  .calendar-grid {
+    background: var(--white);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px var(--shadow);
+    border: 1px solid rgba(201,151,58,0.12);
+  }
+
+  .weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background: var(--brown-mid);
+  }
+
+  .weekdays div {
+    text-align: center;
+    padding: 12px 0;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    font-weight: 500;
+  }
+
+  .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+
+  .day-cell {
+    border-right: 1px solid rgba(201,151,58,0.1);
+    border-bottom: 1px solid rgba(201,151,58,0.1);
+    min-height: 100px;
+    padding: 10px;
+    cursor: pointer;
+    transition: background 0.15s;
+    position: relative;
+  }
+
+  .day-cell:nth-child(7n) { border-right: none; }
+  .day-cell:hover { background: rgba(201,151,58,0.05); }
+  .day-cell.empty { cursor: default; background: rgba(201,151,58,0.02); }
+  .day-cell.today .day-number { background: var(--gold); color: var(--white); border-radius: 50%; }
+  .day-cell.has-entry { background: rgba(201,151,58,0.06); }
+  .day-cell.past-empty { background: rgba(155,58,46,0.03); }
+
+  .day-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem;
+    color: var(--brown-mid);
+    width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+  }
+
+  .day-cell.empty .day-number { color: #ccc; }
+
+  .entries-list { margin-top: 6px; display: flex; flex-direction: column; gap: 3px; }
+
+  .entry-chip {
+    background: var(--gold);
+    color: var(--brown-dark);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 0.65rem;
+    font-weight: 500;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .entry-chip .delete-btn {
+    background: none; border: none;
+    cursor: pointer; color: var(--brown-dark);
+    font-size: 0.65rem; padding: 0;
+    opacity: 0.5; line-height: 1;
+  }
+  .entry-chip .delete-btn:hover { opacity: 1; }
+
+  .day-total {
+    font-size: 0.6rem; color: var(--brown-light);
+    margin-top: 4px; font-weight: 500; letter-spacing: 0.5px;
+  }
+
+  .add-icon {
+    position: absolute; bottom: 6px; right: 8px;
+    color: rgba(201,151,58,0.3); font-size: 1rem; pointer-events: none;
+  }
+  .day-cell:hover .add-icon { color: var(--gold); }
+  .day-cell.empty .add-icon { display: none; }
+
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(44,31,14,0.6);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 36px;
+    width: 360px;
+    max-width: 90vw;
+    box-shadow: 0 24px 80px rgba(44,31,14,0.4);
+    animation: slideUp 0.25s ease;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+
+  .modal h2 { font-family: 'Playfair Display', serif; color: var(--brown-dark); font-size: 1.3rem; margin-bottom: 6px; }
+
+  .modal .modal-date {
+    font-size: 0.75rem; color: var(--brown-light);
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 24px;
+  }
+
+  .form-row { display: flex; gap: 12px; margin-bottom: 16px; }
+
+  .form-group { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+
+  .form-group label {
+    font-size: 0.7rem; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--brown-mid); font-weight: 500;
+  }
+
+  .form-group input[type="time"] {
+    padding: 10px 12px;
+    border: 1.5px solid rgba(201,151,58,0.3);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    color: var(--brown-dark);
+    background: var(--cream);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-group input[type="time"]:focus { border-color: var(--gold); }
+
+  .modal-actions { display: flex; gap: 10px; margin-top: 8px; }
+
+  .btn-cancel {
+    flex: 1; padding: 11px;
+    border: 1.5px solid rgba(201,151,58,0.3);
+    background: none; border-radius: 8px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+    color: var(--brown-mid); cursor: pointer; transition: all 0.2s;
+  }
+  .btn-cancel:hover { border-color: var(--gold); color: var(--gold); }
+
+  .btn-save {
+    flex: 2; padding: 11px;
+    background: var(--gold); border: none; border-radius: 8px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 500;
+    color: var(--brown-dark); cursor: pointer; transition: all 0.2s;
+  }
+  .btn-save:hover { background: var(--gold-light); }
+
+  .error-msg { color: #c0392b; font-size: 0.75rem; margin-top: -8px; margin-bottom: 8px; display: none; }
+
+  @media (max-width: 600px) {
+    header { padding: 18px 16px; flex-direction: column; gap: 12px; }
+    header h1 { font-size: 1.2rem; }
+    .month-label { font-size: 0.9rem; min-width: 120px; }
+    .container { margin: 16px auto; }
+    .monthly-total { flex-direction: column; gap: 10px; }
+    .stat-block .value { font-size: 1.8rem; }
+    .day-cell { min-height: 70px; padding: 6px; }
+    .day-number { font-size: 0.8rem; }
+    .entry-chip { font-size: 0.58rem; }
+    .suggestions-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>✦ Registro de Predicación</h1>
+    <div class="subtitle">Control de horas mensuales</div>
+  </div>
+  <div class="nav-controls">
+    <button class="nav-btn" id="prevMonth">&#8249;</button>
+    <div class="month-label" id="monthLabel"></div>
+    <button class="nav-btn" id="nextMonth">&#8250;</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="monthly-total">
+    <div class="stat-block">
+      <div class="label">Total del mes</div>
+      <div class="value" id="totalTime">0h 00m</div>
+      <div class="progress-bar-wrap" id="progressWrap" style="display:none">
+        <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+      </div>
+    </div>
+    <div class="stat-block">
+      <div class="label">Días predicados</div>
+      <div class="value gold" id="totalDays">0</div>
+    </div>
+    <div class="stat-block" id="remainingBlock" style="display:none">
+      <div class="label">Falta para la meta</div>
+      <div class="value gold" id="remainingTime">—</div>
+    </div>
+  </div>
+
+  <div class="goal-section">
+    <div class="goal-header">
+      <h2>🎯 Meta del mes</h2>
+      <span class="goal-tag">Planificador de horas</span>
+    </div>
+
+    <div class="goal-input-row">
+      <div class="goal-input-group">
+        <label>Meta (horas)</label>
+        <input type="number" id="goalHours" min="1" max="999" placeholder="Ej: 30">
+      </div>
+      <div class="goal-input-group">
+        <label>Meta (minutos)</label>
+        <input type="number" id="goalMinutes" min="0" max="59" placeholder="0">
+      </div>
+      <button class="btn-set-goal" id="btnSetGoal">Calcular plan</button>
+    </div>
+
+    <div class="goal-achieved" id="goalAchieved">
+      🎉 ¡Felicidades! Ya alcanzaste tu meta de este mes.
+    </div>
+
+    <div class="goal-ahead" id="goalAhead">
+      ✦ <span id="goalAheadText"></span>
+    </div>
+
+    <div class="suggestions-wrap" id="suggestionsWrap" style="display:none">
+      <div class="suggestions-title">Opciones para llegar a tu meta en los días que faltan</div>
+      <div class="suggestions-grid" id="suggestionsGrid"></div>
+    </div>
+  </div>
+
+  <div class="calendar-grid">
+    <div class="weekdays">
+      <div>Dom</div><div>Lun</div><div>Mar</div>
+      <div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div>
+    </div>
+    <div class="days-grid" id="daysGrid"></div>
+  </div>
+
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2>Registrar Predicación</h2>
+    <div class="modal-date" id="modalDateLabel"></div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Hora de inicio</label>
+        <input type="time" id="startTime">
+      </div>
+      <div class="form-group">
+        <label>Hora de fin</label>
+        <input type="time" id="endTime">
+      </div>
+    </div>
+    <div class="error-msg" id="errorMsg"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="btnCancel">Cancelar</button>
+      <button class="btn-save" id="btnSave">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY  = 'predicacion_data';
+  const GOAL_KEY     = 'predicacion_goal';
+  const MONTHS_ES    = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+  let currentYear, currentMonth, selectedDay;
+  const today = new Date();
+
+  function loadData() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; } }
+  function saveData(d) { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
+  function loadGoal() { try { return parseInt(localStorage.getItem(GOAL_KEY)) || 0; } catch { return 0; } }
+  function saveGoal(m) { localStorage.setItem(GOAL_KEY, m); }
+
+  function getMonthKey(y, m) { return `${y}-${String(m+1).padStart(2,'0')}`; }
+  function getDayKey(y, m, d) { return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
+
+  function timeToMinutes(t) { const [h,m] = t.split(':').map(Number); return h*60+m; }
+  function minutesToDisplay(t) { const h=Math.floor(t/60),m=t%60; return `${h}h ${String(m).padStart(2,'0')}m`; }
+  function calcDayTotal(entries) { return entries.reduce((a,e)=>a+(timeToMinutes(e.end)-timeToMinutes(e.start)),0); }
+
+  function getMonthTotal() {
+    const data = loadData();
+    const mk   = getMonthKey(currentYear, currentMonth);
+    const md   = data[mk] || {};
+    let total  = 0, days = 0;
+    for (const k in md) {
+      if (k.startsWith(mk) && md[k].length > 0) {
+        total += calcDayTotal(md[k]);
+        days++;
+      }
+    }
+    return { total, days };
+  }
+
+  function getRemainingDays() {
+    const daysInMonth = new Date(currentYear, currentMonth+1, 0).getDate();
+    const isCurrentMonth = (currentYear === today.getFullYear() && currentMonth === today.getMonth());
+    if (!isCurrentMonth) return daysInMonth;
+    return daysInMonth - today.getDate() + 1;
+  }
+
+  function buildSuggestions(needMins, remainingDays) {
+    const grid = document.getElementById('suggestionsGrid');
+    grid.innerHTML = '';
+    if (remainingDays <= 0) return;
+
+    const options = [];
+    options.push({ label: `Los ${remainingDays} días restantes`, days: remainingDays });
+
+    const splits = [Math.ceil(remainingDays * 0.75), Math.ceil(remainingDays * 0.5),
+                    Math.ceil(remainingDays * 0.33), Math.ceil(remainingDays * 0.25)];
+    splits.forEach(d => {
+      if (d > 0 && d < remainingDays && !options.find(o=>o.days===d))
+        options.push({ label: `${d} de los ${remainingDays} días`, days: d });
+    });
+
+    const unique = [...new Map(options.map(o=>[o.days, o])).values()]
+      .sort((a,b) => b.days - a.days);
+
+    unique.forEach(opt => {
+      const perDay = Math.ceil(needMins / opt.days);
+      const impossible = perDay > 720;
+      const h = Math.floor(perDay/60), m = perDay%60;
+      const perDayStr = m > 0 ? `${h}h ${String(m).padStart(2,'0')}m` : `${h}h`;
+
+      const card = document.createElement('div');
+      card.className = 'suggestion-card' + (impossible ? ' impossible' : '');
+      card.innerHTML = `
+        <div class="sc-label">${opt.label}</div>
+        <div class="sc-days">${opt.days} <span style="font-size:1rem;font-family:'DM Sans'">días</span></div>
+        <div class="sc-per-day"><strong>${perDayStr}</strong> / día</div>
+        <div class="sc-note">${impossible ? 'Demasiadas horas por día' : perDay <= 60 ? '¡Muy alcanzable!' : perDay <= 120 ? 'Ritmo moderado' : 'Requiere dedicación'}</div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  function updateGoalPanel() {
+    const goalMins = loadGoal();
+    const { total, days } = getMonthTotal();
+    const remaining = Math.max(0, goalMins - total);
+
+    if (goalMins > 0) {
+      const pct = Math.min(100, Math.round((total / goalMins) * 100));
+      document.getElementById('progressWrap').style.display = 'block';
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('remainingBlock').style.display = '';
+      document.getElementById('remainingTime').textContent = remaining > 0 ? minutesToDisplay(remaining) : '✓ Meta alcanzada';
+    } else {
+      document.getElementById('progressWrap').style.display = 'none';
+      document.getElementById('remainingBlock').style.display = 'none';
+    }
+
+    if (!goalMins) return;
+
+    const achieved = document.getElementById('goalAchieved');
+    const ahead    = document.getElementById('goalAhead');
+    const sugWrap  = document.getElementById('suggestionsWrap');
+
+    achieved.classList.remove('show');
+    ahead.classList.remove('show');
+    sugWrap.style.display = 'none';
+
+    if (total >= goalMins) {
+      const extra = total - goalMins;
+      achieved.classList.add('show');
+      if (extra > 0) {
+        ahead.classList.add('show');
+        document.getElementById('goalAheadText').textContent =
+          `Llevas ${minutesToDisplay(extra)} extra por encima de tu meta. ¡Excelente trabajo!`;
+      }
+      return;
+    }
+
+    const remDays = getRemainingDays();
+    if (remDays <= 0) return;
+    sugWrap.style.display = 'block';
+    buildSuggestions(remaining, remDays);
+  }
+
+  function renderCalendar() {
+    const data = loadData();
+    const mk   = getMonthKey(currentYear, currentMonth);
+    const md   = data[mk] || {};
+
+    document.getElementById('monthLabel').textContent = `${MONTHS_ES[currentMonth]} ${currentYear}`;
+
+    let totalMins = 0, activeDays = 0;
+    for (const k in md) {
+      if (k.startsWith(mk) && md[k].length > 0) {
+        totalMins += calcDayTotal(md[k]);
+        activeDays++;
+      }
+    }
+    document.getElementById('totalTime').textContent = minutesToDisplay(totalMins);
+    document.getElementById('totalDays').textContent = activeDays;
+
+    const grid = document.getElementById('daysGrid');
+    grid.innerHTML = '';
+
+    const firstDay    = new Date(currentYear, currentMonth, 1).getDay();
+    const daysInMonth = new Date(currentYear, currentMonth+1, 0).getDate();
+    const isCurMonth  = (currentYear === today.getFullYear() && currentMonth === today.getMonth());
+
+    for (let i = 0; i < firstDay; i++) {
+      const c = document.createElement('div');
+      c.className = 'day-cell empty';
+      c.innerHTML = '<div class="day-number"></div>';
+      grid.appendChild(c);
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dk      = getDayKey(currentYear, currentMonth, d);
+      const entries = md[dk] || [];
+      const isToday = isCurMonth && d === today.getDate();
+      const isPast  = isCurMonth && d < today.getDate();
+
+      let cls = 'day-cell';
+      if (isToday) cls += ' today';
+      if (entries.length > 0) cls += ' has-entry';
+      else if (isPast) cls += ' past-empty';
+
+      const cell = document.createElement('div');
+      cell.className = cls;
+      cell.dataset.day = d;
+
+      let html = `<div class="day-number">${d}</div>`;
+      if (entries.length > 0) {
+        html += '<div class="entries-list">';
+        entries.forEach((e, idx) => {
+          html += `<div class="entry-chip">
+            <span>${e.start}–${e.end}</span>
+            <button class="delete-btn" data-day="${d}" data-idx="${idx}" title="Eliminar">✕</button>
+          </div>`;
+        });
+        html += '</div>';
+        html += `<div class="day-total">Total: ${minutesToDisplay(calcDayTotal(entries))}</div>`;
+      }
+      html += '<span class="add-icon">+</span>';
+      cell.innerHTML = html;
+
+      cell.addEventListener('click', ev => {
+        if (ev.target.classList.contains('delete-btn')) return;
+        openModal(d);
+      });
+      grid.appendChild(cell);
+    }
+
+    grid.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', ev => {
+        ev.stopPropagation();
+        deleteEntry(parseInt(btn.dataset.day), parseInt(btn.dataset.idx));
+      });
+    });
+
+    updateGoalPanel();
+  }
+
+  function openModal(day) {
+    selectedDay = day;
+    const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+    document.getElementById('modalDateLabel').textContent =
+      new Date(currentYear, currentMonth, day).toLocaleDateString('es-ES', opts);
+    document.getElementById('startTime').value = '';
+    document.getElementById('endTime').value   = '';
+    document.getElementById('errorMsg').style.display = 'none';
+    document.getElementById('modalOverlay').classList.add('open');
+    setTimeout(() => document.getElementById('startTime').focus(), 100);
+  }
+
+  function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+
+  function saveEntry() {
+    const start = document.getElementById('startTime').value;
+    const end   = document.getElementById('endTime').value;
+    const err   = document.getElementById('errorMsg');
+
+    if (!start || !end) {
+      err.textContent = 'Por favor ingresa ambas horas.';
+      err.style.display = 'block'; return;
+    }
+    if (timeToMinutes(end) <= timeToMinutes(start)) {
+      err.textContent = 'La hora de fin debe ser mayor que la de inicio.';
+      err.style.display = 'block'; return;
+    }
+
+    const data = loadData();
+    const mk   = getMonthKey(currentYear, currentMonth);
+    if (!data[mk]) data[mk] = {};
+    const dk   = getDayKey(currentYear, currentMonth, selectedDay);
+    if (!data[mk][dk]) data[mk][dk] = [];
+    data[mk][dk].push({ start, end });
+    saveData(data);
+    closeModal();
+    renderCalendar();
+  }
+
+  function deleteEntry(day, idx) {
+    if (!confirm('¿Eliminar este registro?')) return;
+    const data = loadData();
+    const mk   = getMonthKey(currentYear, currentMonth);
+    const dk   = getDayKey(currentYear, currentMonth, day);
+    if (data[mk] && data[mk][dk]) {
+      data[mk][dk].splice(idx, 1);
+      saveData(data);
+      renderCalendar();
+    }
+  }
+
+  document.getElementById('btnSetGoal').addEventListener('click', () => {
+    const h = parseInt(document.getElementById('goalHours').value) || 0;
+    const m = parseInt(document.getElementById('goalMinutes').value) || 0;
+    const total = h * 60 + m;
+    if (total <= 0) { alert('Por favor ingresa una meta válida.'); return; }
+    saveGoal(total);
+    updateGoalPanel();
+  });
+
+  function loadGoalInputs() {
+    const saved = loadGoal();
+    if (saved > 0) {
+      document.getElementById('goalHours').value   = Math.floor(saved / 60);
+      document.getElementById('goalMinutes').value = saved % 60;
+    }
+  }
+
+  currentYear  = today.getFullYear();
+  currentMonth = today.getMonth();
+
+  document.getElementById('prevMonth').addEventListener('click', () => {
+    currentMonth--; if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+    renderCalendar();
+  });
+  document.getElementById('nextMonth').addEventListener('click', () => {
+    currentMonth++; if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+    renderCalendar();
+  });
+
+  document.getElementById('btnCancel').addEventListener('click', closeModal);
+  document.getElementById('btnSave').addEventListener('click', saveEntry);
+  document.getElementById('modalOverlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('modalOverlay')) closeModal();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+    if (e.key === 'Enter' && document.getElementById('modalOverlay').classList.contains('open')) saveEntry();
+  });
+
+  loadGoalInputs();
+  renderCalendar();
+</script>
+</body>
+</html>
